@@ -36,95 +36,30 @@ jobs:
     - name: Run Tests with Maven
       run: mvn -B test --file pom.xml
 
+     
     - name: ServiceNow DevOps Unit Test Results
-    # You may pin to the exact commit or the version.
-      uses: ServiceNow/servicenow-devops-test-report@v2.0.0
+      uses: ServiceNow/servicenow-devops-test-report@v3.0.0
       with:
-          # Devops Integration Token
-          devops-integration-token: ${{ secrets.SN_DEVOPS_TOKEN }}
-          # ServiceNow Instance Name
+          devops-integration-token: ${{ secrets.SN_DEVOPS_INTEGRATION_TOKEN }}
           instance-url: ${{ secrets.SN_INSTANCE_URL }}
-          # Orchestration Tool Id
           tool-id: ${{ secrets.SN_ORCHESTRATION_TOOL_ID }}
-          # Job Name
-          job-name: 'Test' # Should be same name as declared in 'name' clause of the current Stage
-          # Github Context
           context-github: ${{ toJSON(github) }}
-          # JUnit xml report file name with path
-          xml-report-filename: target/surefire-reports/testng-results.xml # if only JUnit tests, use target/surefire-reports/testng-results.xml
-                                                                          # if both JUnit & TestNG tests, use target/surefire-reports/testng-junit-results/testng-results.xml
-
-  registerArtifact:
-    name: 'Register Artifact'
+          job-name: 'Test'
+          xml-report-filename: target/surefire-reports/testng-results.xml
+          
+  registerartifact:
+    name: Register Artifact
     needs: test
     runs-on: ubuntu-latest
     steps:
-    - name: ServiceNow DevOps Register Artifact
-    # You may pin to the exact commit or the version.          
-      uses: ServiceNow/servicenow-devops-register-artifact@v2.0.0
-      with:
-          # Devops Integration Token
-          devops-integration-token: ${{ secrets.SN_DEVOPS_TOKEN }}
-          # ServiceNow Instance URL
+      - name: ServiceNow Register Artifact
+        uses: ServiceNow/servicenow-devops-register-artifact@v2.0.0
+        with:
+          devops-integration-token: ${{ secrets.SN_DEVOPS_INTEGRATION_TOKEN }}
           instance-url: ${{ secrets.SN_INSTANCE_URL }}
-          # Orchestration Tool Id
           tool-id: ${{ secrets.SN_ORCHESTRATION_TOOL_ID }}
-          # Display Name of the Job
+          context-github: ${{ toJSON(github) }}
           job-name: 'Register Artifact'
-          # Github Context
-          context-github: ${{ toJSON(github) }}
-          # List of Artifacts to be registered
-          artifacts: '[
-              {
-                  "name": "app-devops.jar",
-                  "version": "1.${{ github.run_number }}",
-                  "semanticVersion": "1.${{ github.run_number }}.0",
-                  "repositoryName": "${{ github.repository }}"
-              }
-          ]'
+          artifacts: '[{"name": "app-devops.jar","version": "1.${{ github.run_number }}","semanticVersion": "1.${{ github.run_number }}.0","repositoryName": "${{ github.repository }}"}]'
 
-  sonarScan:
-    name: 'Sonar Scan'
-    needs: registerArtifact
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4.0.0
-    
-    - name: ServiceNow DevOps Sonar Scan Results
-    # You may pin to the exact commit or the version.     
-      uses: ServiceNow/servicenow-devops-sonar@v2.0.0
-      with:
-          # ServiceNow Instance URL
-          instance-url: ${{ secrets.SN_INSTANCE_URL }}
-          # Devops Integration Token
-          devops-integration-token: ${{ secrets.SN_DEVOPS_TOKEN }}
-          # Orchestration Tool Id
-          tool-id: ${{ secrets.SN_ORCHESTRATION_TOOL_ID }}
-          # Github Context
-          context-github: ${{ toJSON(github) }}
-          # Display Name of the Job
-          job-name: 'Sonar Scan'
-          # Sonar Host URL
-          sonar-host-url: ${{ secrets.SONAR_URL }}
-          # Sonar Project Key
-          sonar-project-key: ${{ secrets.SONAR_PROJECT_KEY }}
-
-  securityScan:
-    name: 'Security Scan'
-    needs: sonarScan
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4.0.0
-
-    - name: ServiceNow DevOps Security Results
-      uses: ServiceNow/servicenow-devops-security-result@v2.0.0
-      with:
-          # Devops Integration Token
-          devops-integration-token: ${{ secrets.SN_DEVOPS_TOKEN }}
-          instance-url: ${{ secrets.SN_INSTANCE_URL }}
-          tool-id: ${{ secrets.SN_ORCHESTRATION_TOOL_ID }}
-          context-github: ${{ toJSON(github) }}
-          job-name: 'Security Scan'
-          security-result-attributes: '{ "scanner": "${{ secrets.SCANNER_NAME }}", "applicationName": "${{ secrets.VULNERABILITY_APPLICATION_NAME }}", "securityToolId": "<securityToolSysId>" }'
+ 
