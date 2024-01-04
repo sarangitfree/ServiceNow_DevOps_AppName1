@@ -2,13 +2,12 @@
 
 name: CI GitHub workflow
 
-on:
-  push:
-    branches: [ "Feature-*" ]
-  pull_request:
-    branches: [ "Feature-*" ]
- # Allows you to run this workflow manually from the Actions tab
-  workflow_call:
+on: workflow_dispatch
+  # push:
+  #   branches: [ "main" ]
+  # pull_request:
+  #   branches: [ "main" ]
+  #   types: [opened, synchronize, reopened]
 
 jobs:
   build:
@@ -61,6 +60,4 @@ jobs:
           tool-id: ${{ secrets.SN_ORCHESTRATION_TOOL_ID }}
           context-github: ${{ toJSON(github) }}
           job-name: 'Register Artifact'
-          artifacts: '[{"name": "app-devops.jar","version": "1.${{ github.run_number }}","semanticVersion": "1.${{ github.run_number }}.0","repositoryName": "${{ github.repository }}"}]'
-
- 
+          artifacts: '[{"name": "test-app-now.jar","version": "1.15","semanticVersion": "1.15.0","repositoryName": "${{ github.repository }}"}]'
