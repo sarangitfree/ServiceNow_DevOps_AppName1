@@ -2,12 +2,12 @@
 
 name: CD GitHub workflow
 
-on:
-  push:
-    branches: [ "main" ]
- # Allows you to run this workflow manually from the Actions tab 
-  workflow_dispatch:
-
+on: workflow_dispatch
+  # push:
+  #   branches: [ "main" ]
+  # pull_request:
+  #   branches: [ "main" ]
+  #   types: [opened, synchronize, reopened]
 
 jobs:
   registerpackage:
@@ -22,7 +22,7 @@ jobs:
           tool-id: ${{ secrets.SN_ORCHESTRATION_TOOL_ID }}
           context-github: ${{ toJSON(github) }}
           job-name: 'Register Package'
-          artifacts: '[{"name": "app-devops.jar","version": "1.${{ github.run_number }}","semanticVersion": "1.${{ github.run_number }}.0","repositoryName": "${{ github.repository }}"}]'
+          artifacts: '[{"name": "test-app-now.jar","version": "1.15","semanticVersion": "1.15.0","repositoryName": "${{ github.repository }}"}]'
           package-name: 'app-devops-change-velocity.war'
 
 
