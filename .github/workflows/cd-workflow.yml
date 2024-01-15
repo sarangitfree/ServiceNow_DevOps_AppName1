@@ -48,9 +48,9 @@ jobs:
           # deployment-gate: '{"environment":"deploymentgate","jobName":"ChangeRequest"}'
 
 
-    deploy:
+  deploy:
     name: Deploy
-    needs: <upstream job>
+    needs: changereq
     runs-on: ubuntu-latest
     steps:     
       - name: ServiceNow Get Change
