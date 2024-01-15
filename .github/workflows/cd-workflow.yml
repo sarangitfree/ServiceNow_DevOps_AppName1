@@ -48,11 +48,20 @@ jobs:
           # deployment-gate: '{"environment":"deploymentgate","jobName":"ChangeRequest"}'
 
 
-
-  deploy:
-    name: 'Deploy'
-    needs: changereq
+    deploy:
+    name: Deploy
+    needs: <upstream job>
     runs-on: ubuntu-latest
-    steps:
-    - name: Run deployment scripts
-      run: echo 'Deployment step in progress...'
+    steps:     
+      - name: ServiceNow Get Change
+        uses: ServiceNow/servicenow-devops-get-change@v2.0.0
+        with:
+          devops-integration-token: ${{ secrets.SN_DEVOPS_INTEGRATION_TOKEN }}
+          instance-url: ${{ secrets.SN_INSTANCE_URL }}
+          tool-id: ${{ secrets.SN_ORCHESTRATION_TOOL_ID }}
+          context-github: ${{ toJSON(github) }}
+          change-details: '{"build_number":"21","pipeline_name":"CI_Pipeline","stage_name":"Create_Change"}'
+
+
+
+
