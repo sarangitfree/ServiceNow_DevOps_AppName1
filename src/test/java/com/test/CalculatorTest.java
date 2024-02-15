@@ -39,5 +39,5 @@ public class CalculatorTest {
 		calculator.divide(10, 0);
 	}
 
-	// Add more test cases as needed
+	// One Click Deployment - Test 1
 }
